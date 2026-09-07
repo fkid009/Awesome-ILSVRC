@@ -1,0 +1,15 @@
+[project]
+name = "awesome-ilsvrc"
+version = "0.1.0"
+description = "ILSVRC 우승 아키텍처 (AlexNet/VGG/GoogLeNet/ResNet) 논문 구현 + Lightning 학습"
+# torch는 아직 3.14 wheel이 없다
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "lightning>=2.4",
+    "torch>=2.4",
+    "torchvision>=0.19",
+]
+
+[tool.uv]
+# 모델 파일과 train.py를 그대로 스크립트로 돌린다 - 빌드할 패키지가 없음
+package = false
