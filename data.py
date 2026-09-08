@@ -38,8 +38,14 @@ class TransformDataset(Dataset):
 
 
 class CIFAR10DataModule(L.LightningDataModule):
-    def __init__(self, data_root: str = "./data", val_frac: float = 0.1,
-                 batch_size: int = 64, num_workers: int = 4, seed: int = 42):
+    def __init__(
+        self, 
+        data_root: str = "./data", 
+        val_frac: float = 0.1,
+        batch_size: int = 64, 
+        num_workers: int = 4, 
+        seed: int = 42
+    ):
         super().__init__()
         self.save_hyperparameters()
         self.train_tf, self.eval_tf = build_transform()
@@ -50,24 +56,47 @@ class CIFAR10DataModule(L.LightningDataModule):
 
     def setup(self, stage: str | None = None) -> None:
         root = self.hparams.data_root
-        full = CIFAR10(root, train=True, transform=None)
-        n_val = int(self.hparams.val_frac * len(full))
+        train_full = CIFAR10(
+            root, 
+            train = True,
+            download = True,
+            transform = None
+        )
+        test = CIFAR10(
+            root,
+            train = False,
+            download = True,
+            tansform = None
+        )
+        
+        n_val = int(self.hparams.val_frac * len(train_full))
+        n_train = len(train_full) - n_val
         g = torch.Generator().manual_seed(self.hparams.seed)
-        train, val = random_split(full, [len(full) - n_val, n_val], generator=g)
+        
+        train, val = random_split(
+            train_full, 
+            [ln_train, n_val], 
+            generator=g
+        )
 
         self.ds_train = TransformDataset(train, self.train_tf)
         self.ds_val = TransformDataset(val, self.eval_tf)
-        self.ds_test = TransformDataset(
-            CIFAR10(root, train=False, transform=None), self.eval_tf)
+        self.ds_test = TransformDataset(test, self.eval_tf)
 
     def _loader(self, dataset, shuffle: bool = False) -> DataLoader:
         w = self.hparams.num_workers
-        return DataLoader(dataset, batch_size=self.hparams.batch_size,
-                          shuffle=shuffle, num_workers=w, pin_memory=True,
-                          persistent_workers=w > 0)
+        return DataLoader(
+            dataset, 
+            batch_size = self.hparams.batch_size,
+            shuffle = shuffle, 
+            num_workers = w, 
+            pin_memory = True,
+            persistent_workers = w > 0
+                          
+        )
 
     def train_dataloader(self) -> DataLoader:
-        return self._loader(self.ds_train, shuffle=True)
+        return self._loader(self.ds_train, shuffle = True)
 
     def val_dataloader(self) -> DataLoader:
         return self._loader(self.ds_val)
