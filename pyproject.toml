@@ -1,7 +1,7 @@
 [project]
 name = "awesome-ilsvrc"
 version = "0.1.0"
-description = "ILSVRC 우승 아키텍처 (AlexNet/VGG/GoogLeNet/ResNet) 논문 구현 + Lightning 학습"
+description = "ILSVRC 우승 아키텍처 (AlexNet/VGG/GoogLeNet/ResNet) CIFAR-10 32x32 축소판 + Lightning 학습"
 # torch는 아직 3.14 wheel이 없다
 requires-python = ">=3.11,<3.14"
 dependencies = [
