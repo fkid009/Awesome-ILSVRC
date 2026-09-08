@@ -24,6 +24,3 @@ uv run main.py                     # training and evaluation
 | AlexNet | 81.08 | 80.68 |
 | VGG16 | 83.44 | 83.44 |
 | ResNet20 | 85.62 | 84.96 |
-
-CIFAR-10, `config.py`의 CFG 기본값(10 epochs, batch 64). best val_acc
-체크포인트로 test를 돌린 값이다.
