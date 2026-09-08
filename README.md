@@ -1,6 +1,6 @@
 # Awesome-ILSVRC
 
-ILSVRC 우승 아키텍처를 CIFAR-10용으로 구현
+ILSVRC 주요 아키텍처 구현 레포지토리
 
 ## 시작
 
