@@ -4,8 +4,6 @@ import torch.nn.functional as F
 
 
 class ResBlock(nn.Module):
-    """3x3 -> 3x3 basic block (Fig 5 왼쪽). BN은 conv마다, ReLU는 더한 *뒤*."""
-
     def __init__(self, in_ch: int, out_ch: int, stride: int = 1):
         super().__init__()
         self.conv1 = nn.Conv2d(in_ch, out_ch, 3, stride, padding=1, bias=False)
@@ -30,8 +28,6 @@ class ResBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    """n=3이면 6n+2 = 20층 (논문 Table 6의 ResNet-20)."""
-
     def __init__(self, num_classes: int = 10, n: int = 3, block=ResBlock):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 16, 3, stride=1, padding=1, bias=False)
