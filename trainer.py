@@ -35,8 +35,6 @@ class LitClassifier(L.LightningModule):
         return self._shared_step(batch, "test")
 
     def configure_optimizers(self):
-        """논문들은 plateau마다 lr을 10배씩 줄였다. cosine decay가 스케줄 튜닝
-        없이 비슷하거나 더 나은 결과를 주므로 그걸 쓴다."""
         optimizer = torch.optim.SGD(self.parameters(), lr=self.hparams.lr,
                                     momentum=self.hparams.momentum,
                                     weight_decay=self.hparams.weight_decay)
@@ -46,9 +44,6 @@ class LitClassifier(L.LightningModule):
 
 
 def run(build, name: str, lr: float, cfg, dm) -> dict:
-    """한 모델을 학습하고 best 체크포인트로 test까지 - 결과 한 줄을 돌려준다.
-
-    cfg는 config.CFG (epochs / momentum / weight_decay / seed / amp 를 읽는다)."""
     L.seed_everything(cfg.seed, workers=True)
 
     model = build()
