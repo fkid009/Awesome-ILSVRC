@@ -75,7 +75,7 @@ class CIFAR10DataModule(L.LightningDataModule):
         
         train, val = random_split(
             train_full, 
-            [ln_train, n_val], 
+            [n_train, n_val], 
             generator=g
         )
 
