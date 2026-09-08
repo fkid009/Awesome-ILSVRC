@@ -6,8 +6,14 @@ from lightning.pytorch.loggers import CSVLogger
 
 
 class LitClassifier(L.LightningModule):
-    def __init__(self, model: nn.Module, lr: float = 0.1, momentum: float = 0.9,
-                 weight_decay: float = 5e-4, max_epochs: int = 10):
+    def __init__(
+        self, 
+        model: nn.Module, 
+        lr: float = 0.1, 
+        momentum: float = 0.9,
+        weight_decay: float = 5e-4, 
+        max_epochs: int = 10
+    ):
         super().__init__()
         self.save_hyperparameters(ignore=["model"])
         self.model = model
@@ -21,8 +27,13 @@ class LitClassifier(L.LightningModule):
         logits = self(x)
         loss = self.criterion(logits, y)
         acc = (logits.argmax(dim=-1) == y).float().mean()
-        self.log_dict({f"{stage}_loss": loss, f"{stage}_acc": acc},
-                      on_step=False, on_epoch=True, prog_bar=True)
+        self.log_dict(
+            {f"{stage}_loss": loss, f"{stage}_acc": acc},
+            on_step = False,
+            on_epoch = True, 
+            prog_bar = True
+                      
+        )
         return loss
 
     def training_step(self, batch, batch_idx):
@@ -35,11 +46,15 @@ class LitClassifier(L.LightningModule):
         return self._shared_step(batch, "test")
 
     def configure_optimizers(self):
-        optimizer = torch.optim.SGD(self.parameters(), lr=self.hparams.lr,
-                                    momentum=self.hparams.momentum,
-                                    weight_decay=self.hparams.weight_decay)
+        optimizer = torch.optim.SGD(
+            self.parameters(), 
+            lr = self.hparams.lr,
+            momentum = self.hparams.momentum,
+            weight_decay = self.hparams.weight_decay
+        )
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=self.hparams.max_epochs)
+            optimizer, T_max = self.hparams.max_epochs
+        )
         return {"optimizer": optimizer, "lr_scheduler": scheduler}
 
 
@@ -47,19 +62,24 @@ def run(build, name: str, lr: float, cfg, dm) -> dict:
     L.seed_everything(cfg.seed, workers=True)
 
     model = build()
-    lit = LitClassifier(model, lr=lr, momentum=cfg.momentum,
-                        weight_decay=cfg.weight_decay, max_epochs=cfg.epochs)
+    lit = LitClassifier(
+        model, 
+        lr = lr, 
+        momentum = cfg.momentum,
+        weight_decay = cfg.weight_decay, 
+        max_epochs = cfg.epochs
+    )
     ckpt = ModelCheckpoint(monitor="val_acc", mode="max", save_top_k=1)
     trainer = L.Trainer(
-        max_epochs=cfg.epochs,
-        accelerator="auto",
-        devices=1,
-        precision="16-mixed" if cfg.amp else "32-true",
-        default_root_dir=f"runs/{name}",
-        logger=CSVLogger("runs", name=name),
-        callbacks=[ckpt, LearningRateMonitor(logging_interval="epoch")],
+        max_epochs = cfg.epochs,
+        accelerator = "auto",
+        devices = 1,
+        precision = "16-mixed" if cfg.amp else "32-true",
+        default_root_dir = f"runs/{name}",
+        logger = CSVLogger("runs", name=name),
+        callbacks = [ckpt, LearningRateMonitor(logging_interval="epoch")],
     )
-    trainer.fit(lit, datamodule=dm)
+    trainer.fit(lit, datamodule = dm)
     test = trainer.test(lit, datamodule=dm, ckpt_path="best", verbose=False)[0]
 
     return {
