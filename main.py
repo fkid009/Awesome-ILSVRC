@@ -19,9 +19,17 @@ def main() -> None:
     cfg = CFG()
     print(asdict(cfg))
 
-    dm = CIFAR10DataModule(cfg.data_root, cfg.val_frac, cfg.batch_size,
-                           cfg.num_workers, cfg.seed)
-    rows = [run(build, name, lr, cfg, dm) for build, name, lr in CONFIGS]
+    dm = CIFAR10DataModule(
+        cfg.data_root, 
+        cfg.val_frac, 
+        cfg.batch_size,
+        cfg.num_workers, 
+        cfg.seed           
+    )
+    rows = [
+        run(build, name, lr, cfg, dm) 
+        for build, name, lr in CONFIGS
+    ]
 
     print("\n%-10s %6s %9s %9s %9s"
           % ("model", "lr", "params_M", "val_acc", "test_acc"))
